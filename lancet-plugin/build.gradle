@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+def byteXVersion = '0.3.0'
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+dependencies {
+    compileOnly "com.android.tools.build:gradle:4.1.2"
+    compileOnly gradleApi()
+
+    implementation(project(':lancet-runtime'))
+
+    implementation ("com.bytedance.android.byteX:common:${byteXVersion}"){
+        exclude(group:"com.google.code.findbugs" ,module:"jsr305")
+    }
+    implementation ("com.bytedance.android.byteX:PluginConfigProcessor:${byteXVersion}"){
+        exclude(group:"com.google.code.findbugs" ,module:"jsr305")
+    }
+    annotationProcessor ("com.bytedance.android.byteX:PluginConfigProcessor:${byteXVersion}"){
+        exclude(group:"com.google.code.findbugs" ,module:"jsr305")
+    }
+    kapt ("com.bytedance.android.byteX:PluginConfigProcessor:${byteXVersion}"){
+        exclude(group:"com.google.code.findbugs" ,module:"jsr305")
+    }
+}
+
+apply plugin: "com.vanniktech.maven.publish"

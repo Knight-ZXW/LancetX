@@ -1,0 +1,57 @@
+buildscript {
+    ext.kotlin_version = '1.4.0'
+    repositories {
+        mavenCentral()
+        google()
+        maven { url 'https://jitpack.io' }
+        maven { setUrl("https://artifact.bytedance.com/repository/byteX/") }
+
+        mavenLocal()
+    }
+    dependencies {
+//        classpath 'com.android.tools.build:gradle:7.1.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
+        classpath "com.bytedance.android.byteX:base-plugin:0.3.0"
+        classpath 'io.github.knight-zxw:lancet-plugin:0.0.1-SNAPSHOT'
+//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+//        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+        maven { url 'https://jitpack.io' }
+        maven { setUrl("https://artifact.bytedance.com/repository/byteX/") }
+
+        mavenLocal()
+    }
+
+
+}
+
+
+subprojects { project ->
+    group = GROUP
+    version = VERSION_NAME
+    tasks.withType(Javadoc) {
+        enabled = false
+    }
+    plugins.withId("com.vanniktech.maven.publish") {
+        mavenPublish {
+            sonatypeHost = "s01"
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

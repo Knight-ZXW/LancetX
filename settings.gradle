@@ -1,0 +1,29 @@
+//pluginManagement {
+//    repositories {
+//        mavenLocal()
+//
+//        gradlePluginPortal()
+//        maven { setUrl("https://maven.aliyun.com/repository/public") }
+//        maven { setUrl("https://maven.aliyun.com/repository/google") }
+//        maven { setUrl("https://artifact.bytedance.com/repository/byteX/") }
+//        mavenCentral()
+//        google()
+//        maven { url 'https://jitpack.io' }
+//    }
+//}
+//dependencyResolutionManagement {
+////    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+//    repositories {
+//        maven { setUrl("https://maven.aliyun.com/repository/public") }
+//        maven { setUrl("https://maven.aliyun.com/repository/google") }
+//        maven { setUrl("https://artifact.bytedance.com/repository/byteX/") }
+//        google()
+//        mavenCentral()
+//        maven { url 'https://jitpack.io' }
+//
+//    }
+//}
+rootProject.name = "LancetX"
+include ':app'
+include ':lancet-runtime'
+include ':lancet-plugin'
