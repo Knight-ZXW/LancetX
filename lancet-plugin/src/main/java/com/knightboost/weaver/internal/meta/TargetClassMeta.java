@@ -10,9 +10,7 @@ public class TargetClassMeta extends AnnotationMeta {
     public Scope scope;
 
     public TargetClassMeta(String className,
-                           Scope scope,
-                           String targetMethodDesc) {
-        super(targetMethodDesc);
+                           Scope scope) {
         this.className = className;
         this.scope = scope;
     }

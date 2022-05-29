@@ -86,7 +86,7 @@ public class TypeUtils {
         CollectionUtils.reverse(transforms, rtransforms);
     }
 
-    public static Type getType(String className) {
+    public static Type classNameToType(String className) {
         return Type.getType("L" + className.replace('.', '/') + ";");
     }
 
@@ -363,7 +363,6 @@ public class TypeUtils {
             return getClassName(type);
         }
     }
-
 
 
     public static Type[] getTypes(Class[] classes) {

@@ -6,6 +6,7 @@ public class ReplaceAnnoMeta extends AnnotationMeta {
 
 
     public final String targetMethodName;
+    public String targetMethodDesc;
 
     public final String replaceClassName;
     public final String replaceMethodName;
@@ -21,7 +22,7 @@ public class ReplaceAnnoMeta extends AnnotationMeta {
             String replaceMethodDesc,
             boolean isStatic
     ) {
-        super(targetMethodDesc);
+        this.targetMethodDesc = targetMethodDesc;
         this.targetMethodName = targetMethodName;
         this.replaceClassName = replaceClassName;
         this.replaceMethodName = replaceMethodName;

@@ -20,7 +20,7 @@ import com.knightboost.weaver.api.annotations.Weave;
 
 @Weave
 @Group("apmActivityWeaver")
-public class ActivityMethodWeaver extends Weaver {
+public class ActivityMethodWeaver {
     private static final String BASE_ACTIVITY = "android.app.Activity";
 
     @Keep

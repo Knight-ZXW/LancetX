@@ -6,9 +6,7 @@ import com.ss.android.ugc.bytex.common.BaseContext;
 
 import org.gradle.api.Project;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class KnightWeaveContext extends BaseContext<KnightWeaveExtension> {
@@ -20,12 +18,9 @@ public class KnightWeaveContext extends BaseContext<KnightWeaveExtension> {
     }
 
     // 类名 -> 所属组别  的映射关系
-    private final Map<String, String> weaveClassGroupMap = new HashMap<>();
-
-    private final List<String> weaverClasses = new ArrayList<>();
+    private final Map<String, String> weaverClassOfGroupMap = new HashMap<>();
 
     private final TransformInfo transformInfo =new TransformInfo();
-
 
     public static void setInstance(KnightWeaveContext newWeaveContext) {
         sWeaveContext = newWeaveContext;
@@ -38,24 +33,22 @@ public class KnightWeaveContext extends BaseContext<KnightWeaveExtension> {
     }
 
 
-    public void addGroup(String weaveClass, String group) {
-        weaveClassGroupMap.put(weaveClass, group);
+    public void registerGroupWeaverClass(String weaverClass, String group) {
+        weaverClassOfGroupMap.put(weaverClass, group);
     }
 
-    public boolean isWeaveClassEnable(String weaveClass){
-        String group = weaveClassGroupMap.get(weaveClass);
+    /**
+     * 判断 weaver 功能是否开启
+     * @param weaverClass
+     * @return
+     */
+    public boolean isWeaveEnable(String weaverClass){
+        String group = weaverClassOfGroupMap.get(weaverClass);
         return extension.isWeaveGroupEnable(group);
     }
-    public void addWeaverClasses(String classes) {
-        this.weaverClasses.add(classes);
-    }
-
 
     public TransformInfo getTransformInfo(){
         return transformInfo;
     }
 
-    public void addTransformInfo(TransformInfo transformInfo) {
-        this.transformInfo.combine(transformInfo);
-    }
 }

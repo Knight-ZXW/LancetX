@@ -19,8 +19,6 @@ public class ReplaceWeaveMethodVisitor extends AdviceAdapter {
     private final String methodName;
 
 
-    private boolean log = false;
-
     /**
      * Creates a new {@link AdviceAdapter}.
      *
@@ -38,7 +36,7 @@ public class ReplaceWeaveMethodVisitor extends AdviceAdapter {
             String className) {
         super(Opcodes.ASM5, mv, access, methodName, desc);
         this.className = className;
-        this.methodDesc =desc;
+        this.methodDesc = desc;
         this.matchMap = matchMap;
         this.methodName = methodName;
     }
@@ -50,7 +48,6 @@ public class ReplaceWeaveMethodVisitor extends AdviceAdapter {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-        //这里频繁生成了集合对象,todo 进行优化，将 owner name desc 建立三级映射 提高匹配的速度
 
         // owner.name(desc)
         List<ReplaceInfo> replaceInfoList = matchMap.stream()
@@ -59,7 +56,7 @@ public class ReplaceWeaveMethodVisitor extends AdviceAdapter {
                     public boolean test(ReplaceInfo replaceInfo) {
                         return replaceInfo.targetClassName.equals(owner)
                                 && replaceInfo.targetMethodName.equals(name)
-                                && replaceInfo.targetMethodDesc.equals(desc);
+                                && (replaceInfo.targetMethodDesc.equals(desc));
                     }
                 }).collect(Collectors.toList());
 
@@ -74,8 +71,8 @@ public class ReplaceWeaveMethodVisitor extends AdviceAdapter {
                 }
                 //todo 不允许多于一个的replace注解
                 throw new IllegalStateException("replace for " + owner + "." +
-                        name + "" + desc + " find multiple "+
-                " \n"+" detail info is: \n"+sb.toString());
+                        name + "" + desc + " find multiple ;" +
+                        " \n" + " detail info is: \n" + sb.toString());
             }
             ReplaceInfo replaceInfo = replaceInfoList.get(0);
 
@@ -105,30 +102,18 @@ public class ReplaceWeaveMethodVisitor extends AdviceAdapter {
                         replaceInfo.replaceMethodDesc
                 );
             } else if (opcode == Opcodes.INVOKESTATIC && replaceInfo.targetIsStatic) {
-                //warning
-                //todo 目前函数签名的匹配，没有区分是静态函数，还是成员函数.这里存在风险
-                KnightWeaveContext.instance().getLogger()
-                        .i("replace in class: " + this.className
-                                + " method body " + methodName + methodDesc
-                                + " \n"
-                                + "    " + "replace " + owner + "." + name + desc
-                                + "    " + " to =>" + replaceInfo.replaceClassName + "." +
-                                replaceInfo.replaceMethodName + replaceInfo.replaceMethodDesc
-                        );
+
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC,
                         replaceInfo.replaceClassName,
                         replaceInfo.replaceMethodName,
                         replaceInfo.replaceMethodDesc
                 );
-                return;
             } else {
                 super.visitMethodInsn(opcode, owner, name, desc, itf);
-                return;
             }
 
         } else {
             super.visitMethodInsn(opcode, owner, name, desc, itf);
-            return;
         }
         //
 

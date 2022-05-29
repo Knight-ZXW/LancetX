@@ -9,8 +9,7 @@ public class ClassOfMeta extends AnnotationMeta {
     public final int index;
     public final Type type;
 
-    public ClassOfMeta(String desc, int index, Type type) {
-        super(desc);
+    public ClassOfMeta( int index, Type type) {
         this.index = index;
         this.type = type;
     }

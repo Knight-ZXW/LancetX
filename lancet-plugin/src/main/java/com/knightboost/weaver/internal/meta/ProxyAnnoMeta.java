@@ -6,8 +6,7 @@ public class ProxyAnnoMeta extends AnnotationMeta {
 
     public final String targetMethod;
 
-    public ProxyAnnoMeta(String desc, String targetMethod) {
-        super(desc);
+    public ProxyAnnoMeta(String targetMethod) {
         this.targetMethod = targetMethod;
     }
 

@@ -6,12 +6,6 @@ package com.knightboost.weaver.internal.parser;
 public abstract class AnnotationMeta {
 
     public AnnotationMeta() {
-
     }
 
-    public AnnotationMeta(String targetMethodDesc) {
-        this.targetMethodDesc = targetMethodDesc;
-    }
-
-    public String targetMethodDesc;
 }

@@ -14,5 +14,4 @@ import java.lang.annotation.RetentionPolicy;
 @java.lang.annotation.Target(ElementType.METHOD)
 public @interface NameRegex {
     String value();
-    boolean reverse() default false;
 }

@@ -27,11 +27,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-
 /**
- *
- *
- * Created by Knight-ZXW on 17/5/9.
+ * Created by Knight-ZXW
  */
 public class MethodChain {
 
@@ -125,11 +122,6 @@ public class MethodChain {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-                // if (owner.endsWith("Origin") && name.startsWith("call")){
-                //     head.loadArgsAndInvoke(mv);
-                // }
-                // else
-
                 if (opcode == AopMethodAdjuster.OP_CALL) {
                     head.loadArgsAndInvoke(mv);
                 } else if (opcode == AopMethodAdjuster.OP_THIS_GET_FIELD) {
@@ -201,9 +193,6 @@ public class MethodChain {
         return head;
     }
 
-    public void visitHead(MethodVisitor mv) {
-        head.invoke(mv);
-    }
 
     /**
      *
@@ -254,8 +243,8 @@ public class MethodChain {
             }
             if (needCreate) {
                 String name = String.format(FORMAT, bitset.consume());
-
                 syntheticNode = new MethodInsnNode(INVOKESTATIC, owner, name, staticDesc, false);
+
                 WeaverLog.tag("transform").i("create synthetic node :" + owner + " " + name + " " + staticDesc);
 
                 MethodVisitor mv = cv.visitMethod(ACC_STATIC | ACC_SYNTHETIC, name, staticDesc, null, exceptions);

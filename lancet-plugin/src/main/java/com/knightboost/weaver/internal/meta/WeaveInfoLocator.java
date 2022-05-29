@@ -73,7 +73,6 @@ public class WeaveInfoLocator {
     //weaver类名称
     private String sourceClass;
 
-    private String flowClassName;
     private final Graph graph;
 
     public WeaveInfoLocator(Graph graph) {
@@ -218,19 +217,7 @@ public class WeaveInfoLocator {
                 .forEach(transformInfo::addReplaceInfo);
     }
 
-    private void generateBeforeCallInfo(TransformInfo transformInfo){
-        targetClasses.stream().map(c->{
-            BeforeCallInfo beforeCallInfo = new BeforeCallInfo(nameRegex, c,
-                    targetMethodName,
-                    targetMethodDesc,
-                    sourceClass,
-                    sourceNode
-            );
-            return beforeCallInfo;
-        }).forEach(transformInfo::addBeforeCallInfo);
 
-
-    }
 
     private void check() {
         if (flag <= 0) {
@@ -276,18 +263,7 @@ public class WeaveInfoLocator {
                 .adjust();
     }
 
-    public void mayAddCheckFlow(String className, Scope scope) {
-        Node node = graph.get(className);
-        if (node instanceof ClassNode) {
-            if (scope == Scope.ALL || scope == Scope.LEAF) {
-                this.flowClassName = className;
-            }
-        } else if (node instanceof InterfaceNode) {
-            if (scope != Scope.DIRECT) {
-                this.flowClassName = className;
-            }
-        }
-    }
+
 
     @Override
     public String toString() {

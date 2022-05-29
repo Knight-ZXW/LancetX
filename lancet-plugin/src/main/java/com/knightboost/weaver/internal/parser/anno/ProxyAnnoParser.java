@@ -35,7 +35,7 @@ public class ProxyAnnoParser implements AnnoParser {
                         throw new IllegalAnnotationException();
                 }
             }
-            return new ProxyAnnoMeta(annotationNode.desc, targetMethod);
+            return new ProxyAnnoMeta(targetMethod);
         }
 
         throw new IllegalAnnotationException("@Proxy is illegal, must specify value field");

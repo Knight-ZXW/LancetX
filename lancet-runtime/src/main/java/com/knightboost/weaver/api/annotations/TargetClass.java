@@ -12,8 +12,19 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @java.lang.annotation.Target({ElementType.TYPE, ElementType.METHOD})
 public @interface TargetClass {
+    /**
+     * 目标类名
+     * @return
+     */
     String value();
+
 
     //从继承体系角度 控制  weave 操作范围
     Scope scope() default Scope.SELF;
+
+    /**
+     * 类名正则匹配限定
+     * @return
+     */
+    String nameRegex() default "";
 }

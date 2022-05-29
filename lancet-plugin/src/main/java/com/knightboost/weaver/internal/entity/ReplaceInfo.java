@@ -21,11 +21,14 @@ public class ReplaceInfo {
     public String targetClassName;
     public String targetMethodName;
     public String targetMethodDesc;
+    public String targetStaticMethodDesc;
+
 
 
     public String replaceClassName;
     public String replaceMethodName;
     public String replaceMethodDesc;
+
 
 
     public String sourceClass;

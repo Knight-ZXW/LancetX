@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by Knight-ZXW on 17/4/26.
  */
-public class NewProxyMethodVisitor extends MethodVisitor {
+public class ProxyMethodVisitor extends MethodVisitor {
 
     private final Map<String, MethodChain.Invoker> invokerMap;
     private final Map<String, List<ProxyInfo>> matchMap;
@@ -24,13 +24,13 @@ public class NewProxyMethodVisitor extends MethodVisitor {
     private final MethodChain chain;
     private final WeaveTransformer weaveTransformer;
 
-    public NewProxyMethodVisitor(MethodChain chain,
-                                 MethodVisitor mv,
-                                 Map<String, MethodChain.Invoker> invokerMap,
-                                 Map<String,
+    public ProxyMethodVisitor(MethodChain chain,
+                              MethodVisitor mv,
+                              Map<String, MethodChain.Invoker> invokerMap,
+                              Map<String,
                                       List<ProxyInfo>> matchMap,
-                                 String className, String name,
-                                 WeaveTransformer weaveTransformer) {
+                              String className, String name,
+                              WeaveTransformer weaveTransformer) {
         super(Opcodes.ASM5, mv);
         this.chain = chain;
         this.invokerMap = invokerMap;
@@ -68,8 +68,12 @@ public class NewProxyMethodVisitor extends MethodVisitor {
                 WeaverLog.tag("transform").i(
                         " from " + c.sourceClass + "." + c.sourceMethod.name);
 
-                String methodName = c.sourceClass.replace("/", "_") + "_" + c.sourceMethod.name;
-                chain.next(artificialClassname, Opcodes.ACC_STATIC, methodName, staticDesc, c.threadLocalNode(), cv);
+                String methodName = c.sourceClass.replace("/", "_")
+                        + "_" + c.sourceMethod.name;
+
+                chain.next(artificialClassname,
+                        Opcodes.ACC_STATIC, methodName,
+                        staticDesc, c.threadLocalNode(), cv);
             });
 
             invokerMap.put(key, chain.getHead());

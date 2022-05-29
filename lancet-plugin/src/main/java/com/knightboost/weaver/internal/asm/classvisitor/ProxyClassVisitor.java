@@ -46,7 +46,7 @@ public class ProxyClassVisitor extends BaseWeaveClassVisitor {
         // 3.生成内部类
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         if (matches.size() > 0) {
-            mv = new NewProxyMethodVisitor(transformer.methodChain,
+            mv = new ProxyMethodVisitor(transformer.methodChain,
                     mv,
                     maps,
                     matches,

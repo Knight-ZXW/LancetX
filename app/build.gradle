@@ -15,9 +15,11 @@ KnightWeave{
     enableInDebug true
 
     weaveGroup{
-
-        apmActivityWeaver {
+        test {
             enable true
+        }
+        apmActivityWeaver {
+            enable false
         }
         apmFragmentWeaver {
             enable true

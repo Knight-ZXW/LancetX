@@ -21,15 +21,11 @@ import org.objectweb.asm.tree.VarInsnNode;
  */
 public class AopMethodAdjuster {
 
-
-
     public static  int OP_CALL = 225;
     public static  int OP_THIS_GET_FIELD =226;
     public static  int OP_THIS_PUT_FIELD = 227;
 
-
     public static final String JAVA_LANG_OBJECT = "java/lang/Object";
-
 
     private final boolean allowField;
     private final String sourceClass;

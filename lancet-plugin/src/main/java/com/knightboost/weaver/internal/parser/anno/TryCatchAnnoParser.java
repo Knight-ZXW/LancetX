@@ -13,7 +13,7 @@ public class TryCatchAnnoParser implements AnnoParser {
 
     @Override
     public AnnotationMeta parseAnnotation(AnnotationNode annotationNode) {
-        return new TryCatchAnnoMeta(annotationNode.desc);
+        return new TryCatchAnnoMeta();
     }
 
 }

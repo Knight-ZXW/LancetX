@@ -14,10 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * TODO rename to `ASMMethodProxy`?
- * Created by Knight-ZXW on 17/3/27.
- */
 public class InsertClassVisitor extends BaseWeaveClassVisitor {
 
     private Map<String, List<InsertInfo>> executeInfos;
@@ -71,7 +67,7 @@ public class InsertClassVisitor extends BaseWeaveClassVisitor {
                 int newAccess = (access & ~(Opcodes.ACC_PROTECTED | Opcodes.ACC_PUBLIC))
                         | Opcodes.ACC_PRIVATE;
 
-                MethodChain chain = transformer.methodChain;
+                MethodChain chain = transformer.getMethodChain();
                 chain.headFromInsert(newAccess, transformer.originClassName, newName, desc);
 
                 /**

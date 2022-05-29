@@ -46,7 +46,7 @@ public class ClassOfAnnoParser implements AnnoParser {
             }
 
             Type type = Type.getType(toDesc(className));
-            return new ClassOfMeta(annotationNode.desc, index, type);
+            return new ClassOfMeta( index, type);
         }
 
         throw new IllegalAnnotationException("@ClassOf is illegal, must specify value field");

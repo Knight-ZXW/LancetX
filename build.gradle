@@ -5,7 +5,7 @@ buildscript {
         google()
         maven { url 'https://jitpack.io' }
         maven { setUrl("https://artifact.bytedance.com/repository/byteX/") }
-
+        jcenter()
         mavenLocal()
     }
     dependencies {
@@ -16,7 +16,7 @@ buildscript {
 
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
         classpath "com.bytedance.android.byteX:base-plugin:0.3.0"
-        classpath 'io.github.knight-zxw:lancet-plugin:0.0.1-SNAPSHOT'
+        classpath 'io.github.knight-zxw:lancet-plugin:0.0.1.9-SNAPSHOT'
 //        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
 //        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
         // NOTE: Do not place your application dependencies here; they belong

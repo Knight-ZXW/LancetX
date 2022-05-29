@@ -22,7 +22,7 @@ public class AcceptAny implements AcceptableAnnoParser {
 
     @Override
     public AnnotationMeta parseAnnotation(AnnotationNode annotationNode) {
-        return new AnnotationMeta(annotationNode.desc) {
+        return new AnnotationMeta() {
         };
     }
 }

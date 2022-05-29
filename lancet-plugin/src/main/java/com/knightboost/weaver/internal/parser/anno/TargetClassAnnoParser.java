@@ -35,7 +35,7 @@ public class TargetClassAnnoParser extends BaseAnnoParser {
         String className = temp.replace('.', '/');
         Scope scope =  Scope.valueOf(vs[1]);
 
-        return new TargetClassMeta(className,scope,annotationNode.desc);
+        return new TargetClassMeta(className,scope);
     }
 
 

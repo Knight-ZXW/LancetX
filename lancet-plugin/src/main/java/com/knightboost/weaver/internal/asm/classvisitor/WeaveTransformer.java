@@ -29,6 +29,9 @@ public class WeaveTransformer {
     // simple name of innerClass
     Map<String, ClassWriter> mInnerClassWriter = new HashMap<>();
 
+    /**
+     * 当前类的类名
+     */
     public String originClassName;
     public String superName;
 
@@ -46,20 +49,30 @@ public class WeaveTransformer {
     public WeaveTransformer(ClassVisitorChain visitorChain, Graph graph) {
         this.chain = visitorChain;
         this.graph = graph;
+        OriginalClassVisitor originalClassVisitor = new OriginalClassVisitor();
+
         TransformInfo transformInfo = KnightWeaveContext.instance().getTransformInfo();
-
-        methodChain = new MethodChain(KnightWeaveContext.instance().getClassGraph());
-
-        HookClassVisitor hookClassVisitor = new HookClassVisitor(transformInfo.hookClasses);
-        connect(hookClassVisitor);
+        connect(new HookClassVisitor(transformInfo,originalClassVisitor));
 //        transform.connect(new BeforeCallClassVisitor(transformInfo.beforeCallInfo));
         connect(new InsertClassVisitor(transformInfo.insertInfo));
         connect(new ProxyClassVisitor(transformInfo.proxyInfo));
         connect(new ReplaceClassVisitor(transformInfo));
+        connect(new TryCatchClassVisitor(transformInfo));
+        connect(originalClassVisitor);
+        this.originalClassVisitor = originalClassVisitor;
+        methodChain = new MethodChain(KnightWeaveContext.instance().getClassGraph());
+    }
+
+    public void bindClassVisitorChain(ClassVisitorChain visitorChain){
+
     }
 
     public Graph getGraph(){
         return graph;
+    }
+
+    public MethodChain getMethodChain(){
+        return methodChain;
     }
 
 
@@ -67,7 +80,6 @@ public class WeaveTransformer {
         chain.connect(visitor);
         visitor.transformer = this;
         if (headVisitor == null) {
-            this.originalClassVisitor = visitor;
             headVisitor = visitor;
             tailVisitor = visitor;
         } else {
@@ -106,7 +118,6 @@ public class WeaveTransformer {
         mv.visitMaxs(1, 1);
         mv.visitEnd();
     }
-
 
     public void generateInnerClasses() {
         for (String className : mInnerClassWriter.keySet()) {

@@ -40,7 +40,7 @@ public class InsertAnnoParser implements AnnoParser {
                 }
             }
             //todo 这里的desc是错误的
-            return new InsertAnnoMeta(annotationNode.desc, targetMethod, mayCreateSuper);
+            return new InsertAnnoMeta( targetMethod, mayCreateSuper);
         }
 
         throw new IllegalAnnotationException("@InsertAnnoParser is illegal, must specify value field");

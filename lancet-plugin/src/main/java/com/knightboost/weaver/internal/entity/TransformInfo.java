@@ -15,11 +15,6 @@ import java.util.Set;
  */
 public class TransformInfo {
 
-    //weave classes
-    public Set<String> hookClasses = new HashSet<>();
-
-    // class->group map
-    public Map<String,String> weaveClassGroup = new HashMap<>();
 
     /**
      * Key for target class's name.
@@ -29,22 +24,13 @@ public class TransformInfo {
     public List<ProxyInfo> proxyInfo = new ArrayList<>();
     public List<TryCatchInfo> tryCatchInfo = new ArrayList<>();
     public List<ReplaceInfo> replaceInfo = new ArrayList<>();
-    public List<BeforeCallInfo> beforeCallInfo = new ArrayList<>();
 
     public TransformInfo(){
 
     }
 
-    public synchronized void combine(TransformInfo other) {
-        other.insertInfo.forEach((key, value) -> insertInfo.computeIfAbsent(key, k -> new LinkedList<>())
-                .addAll(value));
-
-        tryCatchInfo.addAll(other.tryCatchInfo);
-        proxyInfo.addAll(other.proxyInfo);
-
-        hookClasses.addAll(other.hookClasses);
-
-        weaveClassGroup.putAll(other.weaveClassGroup);
+    public List<TryCatchInfo> getTryCatchInfo(){
+        return  this.tryCatchInfo;
     }
 
     public synchronized void addInsertInfo(InsertInfo item) {
@@ -61,17 +47,8 @@ public class TransformInfo {
         replaceInfo.add(item);
     }
 
-    public synchronized void addBeforeCallInfo(BeforeCallInfo item) {
-        item.check();
-        beforeCallInfo.add(item);
-    }
-
     public synchronized void addTryCatch(TryCatchInfo t) {
         tryCatchInfo.add(t);
-    }
-
-    public synchronized void setHookClasses(Set<String> hookClasses) {
-        this.hookClasses = hookClasses;
     }
 
 
@@ -103,19 +80,6 @@ public class TransformInfo {
         if (replaceInfo != null) {
             content.append("ReplaceInfo:\n");
             for (ReplaceInfo info : this.replaceInfo) {
-                content.append(' ').append(info).append("\n");
-            }
-        }
-        if (hookClasses != null) {
-            content.append("HookClasses:\n");
-            for (String hookClasses : this.hookClasses) {
-                content.append(' ').append(hookClasses).append("\n");
-            }
-        }
-
-        if (beforeCallInfo != null) {
-            content.append("beforeCallInfos:\n");
-            for (BeforeCallInfo info : this.beforeCallInfo) {
                 content.append(' ').append(info).append("\n");
             }
         }
