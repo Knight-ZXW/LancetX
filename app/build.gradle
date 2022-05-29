@@ -2,6 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'android-aspectjx'
+aspectjx {
+    // 关闭AspectJX功能
+    enabled true
+}
 apply plugin: 'bytex'
 ByteX {
     enable true
@@ -9,19 +14,22 @@ ByteX {
 }
 
 
-apply plugin: 'KnightWeave'
-KnightWeave{
+apply plugin: 'LancetX'
+LancetX{
     enable true
     enableInDebug true
 
     weaveGroup{
+        insertTest {
+            enable true
+        }
+        proxyTest {
+            enable false
+        }
+        replaceInvokeTest {
+            enable true
+        }
 
-        apmActivityWeaver {
-            enable true
-        }
-        apmFragmentWeaver {
-            enable true
-        }
     }
 }
 
@@ -56,6 +64,7 @@ android {
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'org.aspectj:aspectjrt:1.8.9'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
