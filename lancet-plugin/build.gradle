@@ -10,7 +10,8 @@ dependencies {
     compileOnly "com.android.tools.build:gradle:4.1.2"
     compileOnly gradleApi()
 
-    implementation(project(':lancet-runtime'))
+    implementation project(path: ':lancet-runtime')
+
 
     implementation ("com.bytedance.android.byteX:common:${byteXVersion}"){
         exclude(group:"com.google.code.findbugs" ,module:"jsr305")

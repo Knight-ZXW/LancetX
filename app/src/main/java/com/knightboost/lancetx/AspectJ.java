@@ -7,6 +7,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
+/**
+ * 对比 AspectJ生成的字节码
+ */
 @Aspect
 public class AspectJ {
     @Pointcut("within(@com.knightboost.lancetx.AppSpeed *)")
