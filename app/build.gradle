@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-apply plugin: 'android-aspectjx'
-aspectjx {
-    // 关闭AspectJX功能
-    enabled true
-}
+//apply plugin: 'android-aspectjx'
+//aspectjx {
+//    // 关闭AspectJX功能
+//    enabled true
+//}
 apply plugin: 'bytex'
 ByteX {
     enable true
