@@ -177,6 +177,33 @@ public void testThis() {
     Origin.callVoid();
 }
 ```
+
+### 功能分组能力
+  你可能会有对不同的插桩功能进行独立开关控制，而不是全局控制，通过 @Group 注解，你可以为某个Weaver类的插桩功能进行分组命名，
+  在分组之后你可以在gradle 配置中对这组插桩功能进行单独的开关控制。
+ 动态配置
+ ```java
+ @Weaver
+ @Group("insertTest")
+ public class InsertTest {
+ }
+ ```
+
+ ``` gradle
+apply plugin: 'LancetX'
+LancetX{
+    enable true //插件开关
+    enableInDebug //debug包编译时的插件开关
+
+    weaveGroup{
+        //insertTest group所属的字节码修改功能开关
+        insertTest {
+            enable true
+        }
+    }
+}
+ ```
+
 ## 底层实现说明
 todo
 
