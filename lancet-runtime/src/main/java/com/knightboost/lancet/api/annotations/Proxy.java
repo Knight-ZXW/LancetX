@@ -6,11 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by Knight-ZXW on 17/3/20.
+ * Created by Knight-ZXW 
+ * 表示执行 函数调用的 字节码替换操作
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Proxy {
-    // target method name
-    String value();
 }

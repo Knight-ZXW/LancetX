@@ -84,7 +84,7 @@ public void onCreate2(@Nullable Bundle savedInstanceState) {
 @Weaver
 public class LogProxy {
 
-    @Proxy(value = "i")
+    @Proxy()
     @TargetClass(value = "android.util.Log",scope = Scope.SELF)
     @TargetMethod(methodName = "i")
     public static int replaceLogI(String tag,String msg){
