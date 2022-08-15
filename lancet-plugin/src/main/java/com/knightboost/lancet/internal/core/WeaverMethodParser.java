@@ -1,5 +1,7 @@
 package com.knightboost.lancet.internal.core;
 
+import com.android.tools.r8.w.S;
+import com.knightboost.lancet.api.annotations.ImplementedInterface;
 import com.knightboost.lancet.internal.util.AnnotationNodeUtil;
 import com.knightboost.lancet.api.Scope;
 import com.knightboost.lancet.api.annotations.ClassOf;
@@ -29,8 +31,9 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
-
+import java.util.stream.Collectors;
 
 public class WeaverMethodParser {
 
@@ -141,27 +144,63 @@ public class WeaverMethodParser {
 
     public List<String> getTargetClasses(){
         AnnotationNode targetClassNode = getAnnotation(methodNode, TargetClass.class);
-        if (targetClassNode==null){
+        AnnotationNode implementedInterfaceNode = getAnnotation(methodNode, ImplementedInterface.class);
+
+        if (targetClassNode == null && implementedInterfaceNode == null) {
+            //todo throw exception ?
             return new ArrayList<>();
         }
 
+        if (targetClassNode!=null && implementedInterfaceNode!=null){
+            throw new IllegalStateException("@TargetClass 和 @ImplementedInterface 不能同时使用");
+        }
+
+
         ArrayList<String> targetClasses = new ArrayList<>();
 
-        String targetClassName = AnnotationNodeUtil.getAnnotationStringValue(targetClassNode, "value");
-        String[] vs = (String[])AnnotationNodeUtil.getAnnotationValue(targetClassNode,"scope");
-        String targetClassDesc = targetClassName.replace('.', '/');
+        if (targetClassNode!=null){
+            String targetClassName = AnnotationNodeUtil.getAnnotationStringValue(targetClassNode, "value");
+            String[] vs = (String[])AnnotationNodeUtil.getAnnotationValue(targetClassNode,"scope");
+            String targetClassDesc = targetClassName.replace('.', '/');
 
-        Scope scope = Scope.SELF;
-        if (vs!=null){
-            scope =  Scope.valueOf(vs[1]);
+            Scope scope = Scope.SELF;
+            if (vs!=null){
+                scope =  Scope.valueOf(vs[1]);
+            }
+            GraphUtil.childrenOf(graph,targetClassDesc,scope)
+                    .forEach(new Consumer<Node>() {
+                        @Override
+                        public void accept(Node node) {
+                            targetClasses.add(node.entity.name);
+                        }
+                    });
+        } else if (implementedInterfaceNode!=null){
+            List<String> targetInterfaces = (List<String>) AnnotationNodeUtil.getAnnotationValue(implementedInterfaceNode, "value");
+            if (targetInterfaces == null || targetInterfaces.size()==0){
+                throw new IllegalArgumentException("@ImplementedInterface values can't be null or empty");
+            }
+            List<String> targetInterfaceDescList = targetInterfaces.stream().map(new Function<String, String>() {
+                @Override
+                public String apply(String s) {
+                    return s.replace(".", "/");
+                }
+            }).collect(Collectors.toList());
+
+            String[] vs = (String[])AnnotationNodeUtil.getAnnotationValue(implementedInterfaceNode,"scope");
+            Scope scope = Scope.SELF;
+            if (vs!=null){
+                scope =  Scope.valueOf(vs[1]);
+            }
+            GraphUtil.childrenOfInterfaces(graph,targetInterfaceDescList,scope)
+                    .forEach(new Consumer<Node>() {
+                        @Override
+                        public void accept(Node node) {
+                            targetClasses.add(node.entity.name);
+                        }
+                    });
         }
-        GraphUtil.childrenOf(graph,targetClassDesc,scope)
-                .forEach(new Consumer<Node>() {
-                    @Override
-                    public void accept(Node node) {
-                        targetClasses.add(node.entity.name);
-                    }
-                });
+
+
 
         return targetClasses;
     }

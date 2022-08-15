@@ -1,14 +1,17 @@
 package com.knightboost.lancetx;
 
 import android.os.SystemClock;
+import android.util.Log;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 
 /**
- * 对比 AspectJ生成的字节码
+ * 本地测试: 对比 AspectJ生成的字节码
  */
 @Aspect
 public class AspectJ {
@@ -34,4 +37,14 @@ public class AspectJ {
         long stopMills = SystemClock.uptimeMillis();
         return joinPoint.proceed();
     }
+
+    @Before("initialization(com.knightboost.lancetx.ConstructorTest.new(..))")
+    public void interceptObjectInitialisation(JoinPoint joinPoint) {
+        Log.e("zxw",joinPoint.toString());
+    }
+
+    // @Before("staticinitialization(de.scrum_master.app.Account)")
+    // public void interceptClassInitialisation(JoinPoint joinPoint) {
+    //     System.out.println(joinPoint);
+    // }
 }

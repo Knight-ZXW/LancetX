@@ -12,6 +12,7 @@ import com.knightboost.lancet.api.Scope;
 import com.knightboost.lancet.api.This;
 import com.knightboost.lancet.api.WeaverJoinPoint;
 import com.knightboost.lancet.api.annotations.Group;
+import com.knightboost.lancet.api.annotations.ImplementedInterface;
 import com.knightboost.lancet.api.annotations.Insert;
 import com.knightboost.lancet.api.annotations.TargetClass;
 import com.knightboost.lancet.api.annotations.TargetMethod;
@@ -20,6 +21,7 @@ import com.knightboost.lancet.api.annotations.Weaver;
 @Weaver
 @Group("insertTest")
 public class InsertTest {
+
     private static final String BASE_ACTIVITY = "android.app.Activity";
 
     @Keep
@@ -102,6 +104,7 @@ public class InsertTest {
 
     @TargetClass(value = BASE_ACTIVITY, scope = Scope.LEAF)
     @TargetMethod(methodName = "onDestroy")
+    @Insert(mayCreateSuper = true)
     @Keep
     protected void onDestroy() {
         long begin = System.currentTimeMillis();
@@ -110,4 +113,14 @@ public class InsertTest {
         long cost = end - begin;
         Activity activity = (Activity) This.get();
     }
+
+    @ImplementedInterface(value = "com.knightboost.lancetx.InterfaceA",scope = Scope.LEAF)
+    @TargetMethod(methodName = "testMethod")
+    @Insert(mayCreateSuper = true)
+    public void testMethod(){
+        Origin.callVoid();
+        Log.e("InsertTest","interfaceA insert success");
+    }
+
+
 }

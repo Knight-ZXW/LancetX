@@ -21,13 +21,15 @@ public class InsertClassVisitor extends BaseWeaveClassVisitor {
 
     public InsertClassVisitor(Map<String, List<InsertInfo>> executeInfos) {
         this.executeInfos = executeInfos;
-
     }
+
+    private int version;
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
         //该类是否有 修改的请求
+        this.version = version;
         matched = executeInfos.get(name);
     }
 
@@ -60,7 +62,12 @@ public class InsertClassVisitor extends BaseWeaveClassVisitor {
                 String owner = transformer
                         .getCanonicalName(WeaveTransformer.AID_INNER_CLASS_NAME);
                 // 生成原函数的钩子函数
-                String newName = name + "$original";
+                String newName = "original$"+name;
+                boolean isInitMethod = "<init>".equals(name);
+                if (isInitMethod){
+                    throw new RuntimeException("构造函数暂不支持Insert修改");
+                }
+                // 暂时不支持 对构造函数进行 insert变更, TODO 待支持
 
                 // 将access 修改为 private
                 int newAccess = (access & ~(Opcodes.ACC_PROTECTED | Opcodes.ACC_PUBLIC))
