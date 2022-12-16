@@ -59,6 +59,7 @@ public class MethodChain {
             ClassEntity entity = graph.get(className).entity;
             entity.methods.forEach(m -> {
                 if (TypeUtils.isStatic(m.access()) && m.name().startsWith(ACCESS)) {
+
                     bitset.tryAdd(m.name(), len);
                 }
             });

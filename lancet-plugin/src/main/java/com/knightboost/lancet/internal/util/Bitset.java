@@ -1,9 +1,11 @@
 package com.knightboost.lancet.internal.util;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 
+/**
+ * BitSet 用于生成递增的唯一数字
+ */
 public class Bitset {
 
     private static final int[] EMPTY = new int[0];
@@ -11,7 +13,7 @@ public class Bitset {
     private int[] bits;
 
     int next = 0;
-    private Consumer<Bitset> initializer;
+    private Initializer initializer;
 
     public Bitset() {
         bits = EMPTY;
@@ -52,7 +54,7 @@ public class Bitset {
         bit = (bit >> 5) + 1;
         if (bits == EMPTY) {
             bits = new int[minPow(bit)];
-        } else if (bit > bits.length) {
+        } else if (bit >= bits.length) {
             int bl = bits.length << 1;
             bits = Arrays.copyOf(bits, bit <= bl ? bl : minPow(bit));
         }
@@ -76,11 +78,15 @@ public class Bitset {
 
     private void init() {
         if (bits == EMPTY) {
-            initializer.accept(this);
+            initializer.initialize(this);
         }
     }
 
-    public void setInitializer(Consumer<Bitset> initializer) {
+    public void setInitializer(Initializer initializer) {
         this.initializer = initializer;
+    }
+
+    public static interface Initializer{
+        public void initialize(Bitset bitset);
     }
 }
