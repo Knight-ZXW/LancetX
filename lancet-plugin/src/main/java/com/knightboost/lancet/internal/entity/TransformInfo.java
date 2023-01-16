@@ -14,7 +14,7 @@ import java.util.Map;
 public class TransformInfo {
 
 
-    private List<String> weaverClasses =new ArrayList<>();
+    public List<String> weaverClasses =new ArrayList<>();
     /**
      * Key for target class's name.
      * Value for all InsertInfo want insert into the target class.

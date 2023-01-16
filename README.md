@@ -19,8 +19,9 @@ buildscript {
     }
     
     dependencies {
+      //0.3.0 或其他更高版本
       classpath "com.bytedance.android.byteX:base-plugin:0.3.0"
-      classpath "io.github.knight-zxw:lancet-plugin:0.0.1"
+      classpath "io.github.knight-zxw:lancet-plugin:${lancexVersion}"
     }
 }
 ```

@@ -6,6 +6,7 @@ import com.knightboost.lancet.internal.entity.TransformInfo;
 import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +36,17 @@ public class ReplaceClassVisitor extends BaseWeaveClassVisitor {
         this.className = name;
         matches = replaceInfos.stream()
                 .filter(t -> t.match(name))
+                .filter(new Predicate<ReplaceInfo>() {
+                    @Override
+                    public boolean test(ReplaceInfo replaceInfo) {
+                        for (String weaverClass : transformInfo.weaverClasses) {
+                            if (name.startsWith(weaverClass)){ //默认内部类不被插桩
+                                return false;
+                            }
+                        }
+                        return false;
+                    }
+                })
                 .collect(Collectors.toList());
     }
 

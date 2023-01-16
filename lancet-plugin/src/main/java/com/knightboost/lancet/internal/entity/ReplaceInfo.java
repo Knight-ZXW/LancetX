@@ -66,6 +66,11 @@ public class ReplaceInfo {
             this.targetMethodName = this.sourceMethod.name;
         }
 
+        if (this.targetMethodDesc == null){
+            //使用weave函数名作为 目标函数名
+            this.targetMethodDesc = this.sourceMethod.name;
+        }
+
         if (!this.targetIsStatic){
             this.targetMethodDesc = TypeUtils.removeFirstParam(this.sourceMethod.desc);
         }

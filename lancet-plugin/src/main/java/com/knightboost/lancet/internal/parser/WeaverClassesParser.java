@@ -58,13 +58,7 @@ public class WeaverClassesParser {
                     .collect(Collectors.joining(","));
             WeaverLog.w("shouldn't declare fields '" + s + "' in weaver class " + cn.name);
         }
-        int ac = Opcodes.ACC_STATIC | Opcodes.ACC_PUBLIC;
-        cn.innerClasses.forEach(c -> {
-            if ((c.access & ac) != ac) {
-                throw new IllegalStateException("inner class of weaver class "
-                        + cn.name + " must be public static");
-            }
-        });
+
     }
 
     public void parseWeaver(ClassNode cn) {
