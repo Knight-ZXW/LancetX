@@ -11,6 +11,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         ImplA().testMethod()
+        ClassA().printMessage("haha!")
 
         init_method_insert_test.setOnClickListener {
             ConstructorTest(" original call^");

@@ -57,8 +57,62 @@ public class InsertTest{
 
 }
 ```
-在类中，通过在函数上定义使用不同的注解，如 @Proxy @Insert 来定义不同的函数字节码修改行为。
+在类中，通过在函数上定义使用不同的注解，如 @ReplaceInvoke @Proxy @Insert 等来定义不同的函数字节码修改行为。
+### ReplaceInvoke 注解
+用户替换函数调用， 既可以替换 普通成员函数调用，也可以替换 静态函数的调用。
+比如替换 所有 Log.i 函数 (该函数是一个静态函数)的调用，可以通过如下方式实现
+```java
+    @ReplaceInvoke(isStatic = true)
+    @TargetClass(value = "android.util.Log",scope = Scope.SELF)
+    @TargetMethod(methodName = "i")
+    public static int replaceLog(String tag,String msg){
+        msg = msg + "被替换";
+        return Log.e("zxw",msg);
+    }
+```
 
+或者替换一个成员函数的调用。
+比如有一个ClassA 其定义如下
+```java
+public class ClassA {
+    public void printMessage(String message){
+    }
+}
+```
+在另一处中有调用printMessage
+```java
+ClassA a = new ClassA()
+a.printMessage("haha!");
+```
+现在希望替换掉 printMessage的实现, 注意该函数是一个成员函数，我们可以用如下注解实现替换
+```agsl
+@Weaver
+@Group("replaceInvokeTest")
+public class ReplaceInvokeTest {
+    @ReplaceInvoke()
+    @TargetClass(value = "com.knightboost.lancetx.ClassA",scope = Scope.SELF)
+    @TargetMethod(methodName = "printMessage")
+    public static void printMessage(ClassA a, String msg){
+        msg = msg + "";
+        Log.e("ClassA",msg);
+    }
+}
+
+```
+注意函数的第一个参数表示被替换的类，由于原函数为成员函数，默认将这个对象实例作为第一个函数参数传递过来，其他函数参数为原函数
+的参数。 通过该注解，原函数的调用就被替换为
+```java
+ReplaceInvokeTest.printMessage(a,"haha!");
+```
+
+### ReplaceNewInvoke 注解
+用于替换 new xx() 指令。
+比如在项目中，希望将 所有 new Thread() 的调用替换为 new ProxyThread的调用可以通过可以注解实现
+```java
+@ReplaceNewInvoke()
+public static void replaceNewThread(Thread t, ProxyThread proxyThread){
+}
+```
 #### Insert
 `@Insert ` 类似AspectJ的 @Around ，可以实现在原函数前后插入代码。 比如我们希望监控Activity对象 onCreate函数的耗时，则可以用以下的定义实现
 ```java
@@ -95,6 +149,8 @@ public class LogProxy {
 }
 ```
 ## API详解
+
+
 ### Insert注解
 类似AspectJ的Around功能，可以实现对原函数实现切面编程，支持在原函数前后插入新的代码，控制原函数的调用(通过Origin钩子)。
 ### Proxy注解
@@ -178,6 +234,9 @@ public void testThis() {
     Origin.callVoid();
 }
 ```
+
+### 一些限制
+1. ReplaceXX 的实现在函数体中 This、Orignal类及其函数.
 
 ### 功能分组能力
   你可能会有对不同的插桩功能进行独立开关控制，而不是全局控制，通过 @Group 注解，你可以为某个Weaver类的插桩功能进行分组命名，
