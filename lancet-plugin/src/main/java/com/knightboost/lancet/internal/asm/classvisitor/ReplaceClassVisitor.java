@@ -44,7 +44,7 @@ public class ReplaceClassVisitor extends BaseWeaveClassVisitor {
                                 return false;
                             }
                         }
-                        return false;
+                        return true;
                     }
                 })
                 .collect(Collectors.toList());
