@@ -1,4 +1,4 @@
-package com.knightboost.lancet.internal.asm.classvisitor;
+package com.knightboost.lancet.internal.asm.visitor;
 
 import com.android.build.api.transform.Format;
 import com.android.build.api.transform.QualifiedContent;
@@ -53,15 +53,19 @@ public class WeaveTransformer {
 
     public void initVisitorChain(ClassVisitorChain visitorChain){
         this.chain = visitorChain;
-        OriginalClassVisitor originalClassVisitor = new OriginalClassVisitor();
+//        OriginalClassVisitor originalClassVisitor = new OriginalClassVisitor();
+        BaseWeaveClassVisitor classVisitor =new BaseWeaveClassVisitor();
         TransformInfo transformInfo = LancetContext.instance().getTransformInfo();
-        connect(new HookClassVisitor(transformInfo,originalClassVisitor));
-//        transform.connect(new BeforeCallClassVisitor(transformInfo.beforeCallInfo));
+        connect(new HookClassVisitor(transformInfo,classVisitor));
+        //会生成新函数的Visitor
         connect(new InsertClassVisitor(transformInfo.insertInfo));
         connect(new ProxyClassVisitor(transformInfo.proxyInfo));
+        connect(classVisitor);
+        //不会生成新函数的Visitor
         connect(new ReplaceClassVisitor(transformInfo));
+        connect(new ReplaceNewClassVisitor(transformInfo));
+
         connect(new TryCatchClassVisitor(transformInfo));
-        connect(originalClassVisitor);
         this.originalClassVisitor = originalClassVisitor;
 
     }

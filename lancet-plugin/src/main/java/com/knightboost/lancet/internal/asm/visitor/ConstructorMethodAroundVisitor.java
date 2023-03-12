@@ -1,4 +1,4 @@
-package com.knightboost.lancet.internal.asm.classvisitor;
+package com.knightboost.lancet.internal.asm.visitor;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;

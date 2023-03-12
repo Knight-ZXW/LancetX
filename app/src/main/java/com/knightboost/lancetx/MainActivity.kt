@@ -1,5 +1,6 @@
 package com.knightboost.lancetx
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        val thread = Thread()
+        val intent = Intent()
         Log.i("Activity","onResume")
     }
+
+    fun normalMethod(){
+        Log.i("Activity","normalMethod")
+        val thread = Thread()
+    }
+
 }

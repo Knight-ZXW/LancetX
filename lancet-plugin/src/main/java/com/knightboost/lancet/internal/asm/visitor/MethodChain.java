@@ -1,4 +1,4 @@
-package com.knightboost.lancet.internal.asm.classvisitor;
+package com.knightboost.lancet.internal.asm.visitor;
 
 import com.google.common.base.Preconditions;
 import com.knightboost.lancet.internal.log.WeaverLog;

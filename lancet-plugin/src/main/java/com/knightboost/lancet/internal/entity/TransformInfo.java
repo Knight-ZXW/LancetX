@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * <p>
- * A data sets store all data for transform operation.
+ * A data center that store all information of weave
  */
 public class TransformInfo {
 
@@ -23,6 +23,7 @@ public class TransformInfo {
     public List<ProxyInfo> proxyInfo = new ArrayList<>();
     public List<TryCatchInfo> tryCatchInfo = new ArrayList<>();
     public List<ReplaceInfo> replaceInfo = new ArrayList<>();
+    public List<ReplaceInvokeInfo> replaceInvokes = new ArrayList<>();
 
     public TransformInfo(){
 
@@ -44,6 +45,10 @@ public class TransformInfo {
 
     public synchronized void addReplaceInfo(ReplaceInfo item) {
         replaceInfo.add(item);
+    }
+
+    public synchronized void addReplaceInvokes(ReplaceInvokeInfo item) {
+        replaceInvokes.add(item);
     }
 
     public synchronized void addTryCatch(TryCatchInfo t) {

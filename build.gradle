@@ -20,7 +20,7 @@ buildscript {
 
         classpath "com.bytedance.android.byteX:base-plugin:0.3.0"
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
-        classpath 'io.github.knight-zxw:lancet-plugin:0.0.3'
+        classpath 'io.github.knight-zxw:lancet-plugin:0.0.6-localtest15'
 //        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
 //        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
         // NOTE: Do not place your application dependencies here; they belong

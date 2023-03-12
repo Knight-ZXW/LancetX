@@ -2,7 +2,7 @@ package com.knightboost.lancet.plugin;
 
 import com.android.build.api.transform.Transform;
 import com.android.build.gradle.AppExtension;
-import com.knightboost.lancet.internal.asm.classvisitor.WeaveTransformer;
+import com.knightboost.lancet.internal.asm.visitor.WeaveTransformer;
 import com.knightboost.lancet.internal.parser.WeaverClassesParser;
 import com.knightboost.lancet.api.annotations.Weaver;
 import com.ss.android.ugc.bytex.common.CommonPlugin;

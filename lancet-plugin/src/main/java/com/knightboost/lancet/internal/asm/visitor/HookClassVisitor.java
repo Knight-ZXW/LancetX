@@ -1,4 +1,4 @@
-package com.knightboost.lancet.internal.asm.classvisitor;
+package com.knightboost.lancet.internal.asm.visitor;
 
 import com.knightboost.lancet.internal.util.TypeUtils;
 import com.knightboost.lancet.internal.entity.TransformInfo;
@@ -10,12 +10,11 @@ import org.objectweb.asm.Opcodes;
 
 public class HookClassVisitor extends BaseWeaveClassVisitor {
 
-
     private final TransformInfo transformInfo;
     private boolean isWeaveClass;
     private ClassVisitor originalClassVisitor;
 
-    public HookClassVisitor(TransformInfo transformInfo, OriginalClassVisitor originalClassVisitor) {
+    public HookClassVisitor(TransformInfo transformInfo, ClassVisitor originalClassVisitor) {
         this.transformInfo =  transformInfo;
         this.originalClassVisitor = originalClassVisitor;
     }

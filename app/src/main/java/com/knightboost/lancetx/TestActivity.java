@@ -13,6 +13,12 @@ public class TestActivity extends AppCompatActivity {
         Log.e("zxw","original OnCreate");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new Thread().start();
+    }
+
     @AppSpeed(section = "xx")
     public void t(){
 

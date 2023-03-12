@@ -1,7 +1,8 @@
 package com.knightboost.lancet.internal.core;
 
-import com.android.tools.r8.w.S;
 import com.knightboost.lancet.api.annotations.ImplementedInterface;
+import com.knightboost.lancet.api.annotations.ReplaceNewInvoke;
+import com.knightboost.lancet.internal.entity.ReplaceInvokeInfo;
 import com.knightboost.lancet.internal.util.AnnotationNodeUtil;
 import com.knightboost.lancet.api.Scope;
 import com.knightboost.lancet.api.annotations.ClassOf;
@@ -27,9 +28,12 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.ParameterNode;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -44,19 +48,23 @@ public class WeaverMethodParser {
 
     private Pattern classNamePattern = Pattern.compile("^(((?![0-9])\\w+\\.)*((?![0-9])\\w+\\$)?(?![0-9])\\w+)((\\[])*)$");
 
+    private static final Set<String> weaveAnnotations = new HashSet<>();
+    static {
+        weaveAnnotations.add(Type.getDescriptor(Insert.class));
+        weaveAnnotations.add(Type.getDescriptor(Proxy.class));
+        weaveAnnotations.add(Type.getDescriptor(ReplaceInvoke.class));
+        weaveAnnotations.add(Type.getDescriptor(ReplaceNewInvoke.class));
+
+    }
+
     public static boolean isWeaverMethodNode(MethodNode methodNode){
         List<AnnotationNode> annotationNodes = methodNode.visibleAnnotations;
         if (annotationNodes == null || annotationNodes.size()==0){
             return false;
         }
+
         for (AnnotationNode annotationNode : annotationNodes) {
-            if (annotationNode.desc.equals(Type.getDescriptor(Insert.class))) {
-                return true;
-            }
-            if (annotationNode.desc.equals(Type.getDescriptor(Proxy.class))) {
-                return true;
-            }
-            if (annotationNode.desc.equals(Type.getDescriptor(ReplaceInvoke.class))) {
+            if (weaveAnnotations.contains(annotationNode.desc)){
                 return true;
             }
         }
@@ -89,6 +97,8 @@ public class WeaverMethodParser {
             this.weaverType = WeaverType.PROXY;
         } else if (getAnnotation(methodNode, ReplaceInvoke.class) != null) {
             this.weaverType = WeaverType.REPLACE_INVOKE;
+        } else if (getAnnotation(methodNode, ReplaceNewInvoke.class) != null) {
+            this.weaverType = WeaverType.REPLACE_NEW_INVOKE;
         }
     }
 
@@ -119,11 +129,9 @@ public class WeaverMethodParser {
                                 }
                             } else {
                                 if (originalType.getSort() != Type.OBJECT || !"java/lang/Object".equals(originalType.getInternalName())) {
-                                    throw new IllegalArgumentException("@ClassOf 's origin type should be parent in value");
+                                    throw new IllegalArgumentException("@ClassOf 's origin type should be parent  in value");
                                 }
                             }
-
-
 
                         }
                     }
@@ -147,7 +155,6 @@ public class WeaverMethodParser {
         AnnotationNode implementedInterfaceNode = getAnnotation(methodNode, ImplementedInterface.class);
 
         if (targetClassNode == null && implementedInterfaceNode == null) {
-            //todo throw exception ?
             return new ArrayList<>();
         }
 
@@ -174,7 +181,7 @@ public class WeaverMethodParser {
                             targetClasses.add(node.entity.name);
                         }
                     });
-        } else if (implementedInterfaceNode!=null){
+        } else {
             List<String> targetInterfaces = (List<String>) AnnotationNodeUtil.getAnnotationValue(implementedInterfaceNode, "value");
             if (targetInterfaces == null || targetInterfaces.size()==0){
                 throw new IllegalArgumentException("@ImplementedInterface values can't be null or empty");
@@ -255,7 +262,7 @@ public class WeaverMethodParser {
                 transformInfo.addProxyInfo(proxyInfo);
             }
 
-        } else  if ( this.weaverType == WeaverType.REPLACE_INVOKE){
+        } else  if (this.weaverType == WeaverType.REPLACE_INVOKE){
             AnnotationNode annotation = getAnnotation(methodNode, ReplaceInvoke.class);
             boolean isStatic = AnnotationNodeUtil.getAnnotationBoolValue(annotation, "isStatic", false);
 
@@ -281,7 +288,23 @@ public class WeaverMethodParser {
                 replaceInfo.check();
                 transformInfo.addReplaceInfo(replaceInfo);
             }
+        }else  if (this.weaverType == WeaverType.REPLACE_NEW_INVOKE){
+            AnnotationNode annotation = getAnnotation(methodNode, ReplaceNewInvoke.class);
+            Type argumentType = Type.getArgumentTypes(methodNode.desc)[0];
+            String className = argumentType.getClassName().replace('.', '/');
+
+            Type newType = Type.getArgumentTypes(methodNode.desc)[1];
+            String newClassType = newType.getClassName().replace('.', '/');
+
+
+            ReplaceInvokeInfo replaceInvokeInfo = new ReplaceInvokeInfo(
+                    className,
+                    newClassType,
+                    methodNode);
+            transformInfo.addReplaceInvokes(replaceInvokeInfo);
+
         }
+
 
         new AopMethodAdjuster(weaverType == WeaverType.INSERT,
                 sourceClassName(),

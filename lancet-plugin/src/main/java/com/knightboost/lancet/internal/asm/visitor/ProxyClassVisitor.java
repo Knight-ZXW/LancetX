@@ -1,4 +1,4 @@
-package com.knightboost.lancet.internal.asm.classvisitor;
+package com.knightboost.lancet.internal.asm.visitor;
 
 import com.knightboost.lancet.internal.entity.ProxyInfo;
 
@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProxyClassVisitor extends BaseWeaveClassVisitor {
-
-
 
     private List<ProxyInfo> infos;
 

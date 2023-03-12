@@ -1,4 +1,4 @@
-package com.knightboost.lancet.internal.asm.classvisitor;
+package com.knightboost.lancet.internal.asm.visitor;
 
 import com.knightboost.lancet.internal.entity.ProxyInfo;
 import com.knightboost.lancet.internal.log.WeaverLog;

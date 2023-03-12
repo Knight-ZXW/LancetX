@@ -18,7 +18,7 @@ public class ReplaceInvokeTest {
     @TargetClass(value = "android.util.Log",scope = Scope.SELF)
     @TargetMethod(methodName = "i")
     public static int replaceLogI2(String tag,String msg){
-        msg = msg + "lancet";
+        msg = msg + "被替换";
         return Log.e("zxw",msg);
     }
 }

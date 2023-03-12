@@ -1,4 +1,4 @@
-package com.knightboost.lancet.internal.asm.classvisitor;
+package com.knightboost.lancet.internal.asm.visitor;
 
 import com.knightboost.lancet.internal.entity.ReplaceInfo;
 import com.knightboost.lancet.plugin.LancetContext;
