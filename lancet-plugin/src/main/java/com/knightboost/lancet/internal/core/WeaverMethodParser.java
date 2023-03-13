@@ -1,7 +1,9 @@
 package com.knightboost.lancet.internal.core;
 
+import com.knightboost.lancet.api.annotations.ChangeClassExtends;
 import com.knightboost.lancet.api.annotations.ImplementedInterface;
 import com.knightboost.lancet.api.annotations.ReplaceNewInvoke;
+import com.knightboost.lancet.internal.entity.ChangeExtendMeta;
 import com.knightboost.lancet.internal.entity.ReplaceInvokeInfo;
 import com.knightboost.lancet.internal.util.AnnotationNodeUtil;
 import com.knightboost.lancet.api.Scope;
@@ -99,6 +101,9 @@ public class WeaverMethodParser {
             this.weaverType = WeaverType.REPLACE_INVOKE;
         } else if (getAnnotation(methodNode, ReplaceNewInvoke.class) != null) {
             this.weaverType = WeaverType.REPLACE_NEW_INVOKE;
+        } else if (getAnnotation(methodNode, ChangeClassExtends.class) != null) {
+            this.weaverType = WeaverType.CHANGE_CLASS_EXTEND;
+
         }
     }
 
@@ -288,7 +293,7 @@ public class WeaverMethodParser {
                 replaceInfo.check();
                 transformInfo.addReplaceInfo(replaceInfo);
             }
-        }else  if (this.weaverType == WeaverType.REPLACE_NEW_INVOKE){
+        } else  if (this.weaverType == WeaverType.REPLACE_NEW_INVOKE){
             AnnotationNode annotation = getAnnotation(methodNode, ReplaceNewInvoke.class);
             Type argumentType = Type.getArgumentTypes(methodNode.desc)[0];
             String className = argumentType.getClassName().replace('.', '/');
@@ -303,6 +308,17 @@ public class WeaverMethodParser {
                     methodNode);
             transformInfo.addReplaceInvokes(replaceInvokeInfo);
 
+        } else  if (this.weaverType == WeaverType.CHANGE_CLASS_EXTEND){
+            AnnotationNode annotation = getAnnotation(methodNode, ChangeClassExtends.class);
+            assert annotation != null;
+            String beforeExtend = AnnotationNodeUtil.getAnnotationStringValue(annotation, "beforeExtend")
+                    .replace('.','/');
+            String afterExtend = AnnotationNodeUtil.getAnnotationStringValue(annotation, "afterExtend")
+                    .replace('.','/');
+            ChangeExtendMeta changeExtendMeta = new ChangeExtendMeta(beforeExtend, afterExtend);
+            String classNameFilterRegex = AnnotationNodeUtil.getAnnotationStringValue(annotation, "classNameFilterRegex");
+            changeExtendMeta.setClassNameFilterRegex(classNameFilterRegex);
+            transformInfo.addChangeExtend(changeExtendMeta);
         }
 
 

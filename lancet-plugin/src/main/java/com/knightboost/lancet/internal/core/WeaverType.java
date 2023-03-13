@@ -5,4 +5,5 @@ public enum WeaverType {
     PROXY,
     REPLACE_INVOKE,
     REPLACE_NEW_INVOKE,
+    CHANGE_CLASS_EXTEND
 }

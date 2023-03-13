@@ -57,6 +57,8 @@ public class WeaveTransformer {
         BaseWeaveClassVisitor classVisitor =new BaseWeaveClassVisitor();
         TransformInfo transformInfo = LancetContext.instance().getTransformInfo();
         connect(new HookClassVisitor(transformInfo,classVisitor));
+        //
+        connect(new ChangeClassExtendVisitor(transformInfo));
         //会生成新函数的Visitor
         connect(new InsertClassVisitor(transformInfo.insertInfo));
         connect(new ProxyClassVisitor(transformInfo.proxyInfo));

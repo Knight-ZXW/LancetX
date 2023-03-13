@@ -24,6 +24,7 @@ public class TransformInfo {
     public List<TryCatchInfo> tryCatchInfo = new ArrayList<>();
     public List<ReplaceInfo> replaceInfo = new ArrayList<>();
     public List<ReplaceInvokeInfo> replaceInvokes = new ArrayList<>();
+    public List<ChangeExtendMeta> changeExtendMetas = new ArrayList<>();
 
     public TransformInfo(){
 
@@ -49,6 +50,10 @@ public class TransformInfo {
 
     public synchronized void addReplaceInvokes(ReplaceInvokeInfo item) {
         replaceInvokes.add(item);
+    }
+
+    public synchronized void addChangeExtend(ChangeExtendMeta changeExtendMeta){
+        this.changeExtendMetas.add(changeExtendMeta);
     }
 
     public synchronized void addTryCatch(TryCatchInfo t) {
