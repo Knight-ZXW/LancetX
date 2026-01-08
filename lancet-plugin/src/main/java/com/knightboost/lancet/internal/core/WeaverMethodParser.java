@@ -19,12 +19,10 @@ import com.knightboost.lancet.internal.entity.ProxyInfo;
 import com.knightboost.lancet.internal.entity.ReplaceInfo;
 import com.knightboost.lancet.internal.entity.TransformInfo;
 import com.knightboost.lancet.internal.graph.GraphUtil;
+import com.knightboost.lancet.internal.graph.SimpleClassGraph;
 import com.knightboost.lancet.internal.parser.AopMethodAdjuster;
 import com.knightboost.lancet.internal.util.TypeUtils;
 import com.knightboost.lancet.plugin.LancetContext;
-import com.ss.android.ugc.bytex.common.graph.Graph;
-import com.ss.android.ugc.bytex.common.graph.Node;
-import com.ss.android.ugc.bytex.common.log.ILogger;
 
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -46,7 +44,7 @@ public class WeaverMethodParser {
     private WeaverType weaverType;
     private final MethodNode methodNode;
     private final ClassNode classNode;
-    private final Graph graph;
+    private final SimpleClassGraph graph;
 
     private Pattern classNamePattern = Pattern.compile("^(((?![0-9])\\w+\\.)*((?![0-9])\\w+\\$)?(?![0-9])\\w+)((\\[])*)$");
 
@@ -80,7 +78,7 @@ public class WeaverMethodParser {
      * @param classNode weaver classNode
      * @param methodNode weaver method
      */
-    public WeaverMethodParser(Graph graph,
+    public WeaverMethodParser(SimpleClassGraph graph,
                               ClassNode classNode,
                               MethodNode methodNode) {
         this.graph = graph;
@@ -180,10 +178,10 @@ public class WeaverMethodParser {
                 scope =  Scope.valueOf(vs[1]);
             }
             GraphUtil.childrenOf(graph,targetClassDesc,scope)
-                    .forEach(new Consumer<Node>() {
+                    .forEach(new Consumer<org.objectweb.asm.tree.ClassNode>() {
                         @Override
-                        public void accept(Node node) {
-                            targetClasses.add(node.entity.name);
+                        public void accept(org.objectweb.asm.tree.ClassNode node) {
+                            targetClasses.add(node.name);
                         }
                     });
         } else {
@@ -204,10 +202,10 @@ public class WeaverMethodParser {
                 scope =  Scope.valueOf(vs[1]);
             }
             GraphUtil.childrenOfInterfaces(graph,targetInterfaceDescList,scope)
-                    .forEach(new Consumer<Node>() {
+                    .forEach(new Consumer<org.objectweb.asm.tree.ClassNode>() {
                         @Override
-                        public void accept(Node node) {
-                            targetClasses.add(node.entity.name);
+                        public void accept(org.objectweb.asm.tree.ClassNode node) {
+                            targetClasses.add(node.name);
                         }
                     });
         }
@@ -361,10 +359,5 @@ public class WeaverMethodParser {
         } else { // array
             return type.getElementType().getInternalName();
         }
-    }
-
-
-    public ILogger getLogger(){
-        return LancetContext.instance().getLogger();
     }
 }

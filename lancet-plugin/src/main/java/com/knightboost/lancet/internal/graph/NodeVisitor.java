@@ -1,11 +1,9 @@
 package com.knightboost.lancet.internal.graph;
 
-
-import com.ss.android.ugc.bytex.common.graph.Node;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.util.function.Consumer;
 
 public interface NodeVisitor {
-    void forEach(Consumer<Node> node);
-
+    void forEach(Consumer<ClassNode> node);
 }

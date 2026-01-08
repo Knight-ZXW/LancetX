@@ -1,117 +1,100 @@
 package com.knightboost.lancet.internal.graph;
-import com.android.tools.r8.w.S;
+
 import com.knightboost.lancet.api.Scope;
 import com.knightboost.lancet.internal.log.WeaverLog;
-import com.knightboost.lancet.internal.util.TypeUtils;
-import com.ss.android.ugc.bytex.common.graph.ClassNode;
-import com.ss.android.ugc.bytex.common.graph.Graph;
-import com.ss.android.ugc.bytex.common.graph.InterfaceNode;
-import com.ss.android.ugc.bytex.common.graph.MethodEntity;
-import com.ss.android.ugc.bytex.common.graph.Node;
+
+import org.objectweb.asm.tree.ClassNode;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class GraphUtil {
 
-
-    public static MethodEntity findFinalOriginalMethod(Graph graph,
-                                                       String className,
-                                                       String methodName,
-                                                       String methodDesc){
-        Node node = graph.get(className);
-        MethodEntity methodEntity = node.confirmOriginMethod(methodName, methodDesc);
-        if (methodEntity!=null && TypeUtils.isFinal(methodEntity.access())){
-            return methodEntity;
-        }
-        return null;
-    }
-
-    public static NodeVisitor childrenOf(Graph graph,
+    public static NodeVisitor childrenOf(SimpleClassGraph graph,
                                          String className,
                                          Scope scope) {
         return visitor -> {
-            Node node = graph.get(className);
+            ClassNode node = graph.get(className);
             if (node == null) {
                 WeaverLog.e("Weaver Warning!! =>>> Class named " + className + " with scope '" + scope + "' is not exists in apk,  this weave action will be ignored");
                 return;
-            } else if (!(node instanceof ClassNode)) {
-                throw new IllegalArgumentException(className + " is not a class");
             }
-            visitClasses((ClassNode) node, scope, visitor);
+            visitClasses(graph, node, scope, visitor);
         };
     }
 
-    public static NodeVisitor childrenOfInterfaces(Graph graph,
+    public static NodeVisitor childrenOfInterfaces(SimpleClassGraph graph,
                                                    List<String> interfaces,
                                                    Scope scope) {
         return visitor -> {
-            for (String interfaceName :interfaces){
-                Node node = graph.get(interfaceName);
+            for (String interfaceName : interfaces) {
+                ClassNode node = graph.get(interfaceName);
                 if (node == null) {
-                    WeaverLog.e("Weaver Warning!! =>>> Class named " + interfaceName + " with scope '" + scope + "' is not exists in apk,  this weave action will be ignored");
-                    return;
+                    WeaverLog.e("Weaver Warning!! =>>> Interface named " + interfaceName + " with scope '" + scope + "' is not exists in apk,  this weave action will be ignored");
+                    continue;
                 }
-                if (!(node instanceof com.ss.android.ugc.bytex.common.graph.InterfaceNode)){
-                    throw new IllegalStateException(interfaceName+" 不是interface");
-                }
-                visitImplements((InterfaceNode) node, scope, visitor);
+                visitInterfaceImplementations(graph, interfaceName, scope, visitor);
             }
-
         };
     }
 
-    private static void visitImplements(InterfaceNode node, Scope scope, Consumer<Node> visitor){
-        List<ClassNode> classes = node.implementedClasses;
-        List<InterfaceNode> children = node.children;
-        switch (scope){
-            case ALL:
-                classes.forEach(c->visitClasses(c,scope,visitor));
-                break;
-            case DIRECT:
-                children.forEach(c->visitImplements(c,scope,visitor));
-                break;
-            case SELF:
-                classes.forEach(visitor);
-                break;
-            case LEAF:
-                children.forEach(c->visitImplements(c,scope,visitor));
-                classes.stream()
-                        .filter(c->{
-                            if (c.children.size() ==0){
-                                visitor.accept(c);
-                                return false;
-                            }
-                            return true;
-                        }).forEach(c->visitClasses(c,scope,visitor));
+    private static void visitInterfaceImplementations(SimpleClassGraph graph, String interfaceName, Scope scope, Consumer<ClassNode> visitor) {
+        List<ClassNode> implementations = graph.getImplementations(interfaceName);
+        for (ClassNode impl : implementations) {
+            switch (scope) {
+                case SELF:
+                    visitor.accept(impl);
+                    break;
+                case ALL:
+                case ALL_CHILDREN:
+                    visitor.accept(impl);
+                    visitClasses(graph, impl, scope, visitor);
+                    break;
+                case DIRECT:
+                    visitor.accept(impl);
+                    break;
+                case LEAF:
+                    List<ClassNode> children = graph.getChildren(impl.name);
+                    if (children.isEmpty()) {
+                        visitor.accept(impl);
+                    } else {
+                        visitClasses(graph, impl, scope, visitor);
+                    }
+                    break;
+            }
         }
     }
 
-    private  static void visitClasses(ClassNode classNode,
-                                      Scope scope, Consumer<Node> visitor) {
-        List<ClassNode> children = classNode.children;
+    private static void visitClasses(SimpleClassGraph graph, ClassNode classNode, Scope scope, Consumer<ClassNode> visitor) {
+        List<ClassNode> children = graph.getChildren(classNode.name);
         switch (scope) {
             case SELF:
                 visitor.accept(classNode);
                 break;
             case ALL:
                 visitor.accept(classNode);
-                children.forEach(n -> visitClasses(n, scope, visitor));
+                for (ClassNode child : children) {
+                    visitClasses(graph, child, scope, visitor);
+                }
+                break;
             case ALL_CHILDREN:
-                children.forEach(n -> visitClasses(n, scope, visitor));
+                for (ClassNode child : children) {
+                    visitClasses(graph, child, scope, visitor);
+                }
+                break;
             case DIRECT:
-                children.forEach(visitor);
+                for (ClassNode child : children) {
+                    visitor.accept(child);
+                }
                 break;
             case LEAF:
-                children.stream()
-                        .filter(n -> {
-                            if (n.children.size() == 0) {
-                                visitor.accept(n);
-                                return false;
-                            }
-                            return true;
-                        })
-                        .forEach(n -> visitClasses(n, scope, visitor));
+                if (children.isEmpty()) {
+                    visitor.accept(classNode);
+                } else {
+                    for (ClassNode child : children) {
+                        visitClasses(graph, child, scope, visitor);
+                    }
+                }
                 break;
         }
     }

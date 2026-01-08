@@ -65,6 +65,7 @@ public class HookClassVisitor extends BaseWeaveClassVisitor {
     @Override
     public void visitEnd() {
         super.visitEnd();
-        transformer.generateInnerClasses();
+        // TODO: 需要传递输出目录参数
+        // transformer.generateInnerClasses(outputDir);
     }
 }

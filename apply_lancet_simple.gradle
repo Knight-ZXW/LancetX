@@ -1,0 +1,81 @@
+// LancetX 插件注册脚本
+// 需要在项目评估前添加 classpath，所以不能在 afterEvaluate 中
+
+// 1. 确保 lancet-plugin 被构建
+def lancetPluginProject = project.findProject(':lancet-plugin')
+if (lancetPluginProject != null) {
+    // 强制构建 lancet-plugin
+    lancetPluginProject.buildDir.mkdirs()
+    project.evaluationDependsOn(lancetPluginProject.path)
+
+    // 获取构建输出
+    def buildDir = lancetPluginProject.buildDir
+    def classesDir = new File(buildDir, "classes/java/main")
+    def kotlinClassesDir = new File(buildDir, "classes/kotlin/main")
+
+    // 尝试添加到 classpath
+    def classLoader = project.buildscript.classLoader
+
+    // 如果是 URLClassLoader，添加类目录
+    if (classLoader instanceof URLClassLoader) {
+        def addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class)
+        addUrlMethod.setAccessible(true)
+
+        if (classesDir.exists()) {
+            addUrlMethod.invoke(classLoader, classesDir.toURI().toURL())
+            println("LancetX: Added to classpath: " + classesDir)
+        }
+        if (kotlinClassesDir.exists()) {
+            addUrlMethod.invoke(classLoader, kotlinClassesDir.toURI().toURL())
+            println("LancetX: Added to classpath: " + kotlinClassesDir)
+        }
+
+        // 添加依赖的 JAR
+        lancetPluginProject.configurations.getByName("runtimeClasspath").each { file ->
+            if (file.exists()) {
+                addUrlMethod.invoke(classLoader, file.toURI().toURL())
+            }
+        }
+    }
+}
+
+// 在 afterEvaluate 中注册 Transform
+project.afterEvaluate {
+    try {
+        println("LancetX: Registering Transform...")
+
+        // 获取 android extension
+        def android = project.android
+
+        // 创建 LancetExtension
+        def lancetExtensionClass = project.buildscript.classLoader.loadClass('com.knightboost.lancet.plugin.LancetExtension')
+        def lancetExtension = project.extensions.findByType(lancetExtensionClass)
+
+        if (lancetExtension == null) {
+            println("LancetX: Creating new extension...")
+            lancetExtension = project.extensions.create('LancetX', lancetExtensionClass, project)
+
+            // 配置扩展
+            lancetExtension.enable(true)
+            lancetExtension.enableInDebug(true)
+
+            println("LancetX: Extension configured and created")
+        }
+
+        // 创建并注册 Transform
+        println("LancetX: Creating Transform instance...")
+        def lancetTransformClass = project.buildscript.classLoader.loadClass('com.knightboost.lancet.plugin.LancetTransform')
+
+        def transformConstructor = lancetTransformClass.getConstructor(org.gradle.api.Project.class, lancetExtensionClass)
+        def transform = transformConstructor.newInstance(project, lancetExtension)
+
+        println("LancetX: Registering Transform to Android...")
+        android.registerTransform(transform)
+
+        println("LancetX: Transform registered successfully!")
+    } catch (Exception e) {
+        println("LancetX: Failed to register Transform")
+        println("Error: " + e.class.name + " - " + e.message)
+        e.printStackTrace()
+    }
+}

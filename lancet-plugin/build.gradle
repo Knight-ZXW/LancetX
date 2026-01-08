@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
-def byteXVersion = '0.3.0'
+apply plugin: 'java-gradle-plugin'
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -13,17 +13,17 @@ dependencies {
     implementation project(path: ':lancet-runtime')
     testImplementation 'junit:junit:4.13.2'
 
-    implementation ("com.bytedance.android.byteX:common:${byteXVersion}"){
-        exclude(group:"com.google.code.findbugs" ,module:"jsr305")
-    }
-    implementation ("com.bytedance.android.byteX:PluginConfigProcessor:${byteXVersion}"){
-        exclude(group:"com.google.code.findbugs" ,module:"jsr305")
-    }
-    annotationProcessor ("com.bytedance.android.byteX:PluginConfigProcessor:${byteXVersion}"){
-        exclude(group:"com.google.code.findbugs" ,module:"jsr305")
-    }
-    kapt ("com.bytedance.android.byteX:PluginConfigProcessor:${byteXVersion}"){
-        exclude(group:"com.google.code.findbugs" ,module:"jsr305")
+    implementation "com.android.tools.build:gradle:4.1.2"
+    implementation 'org.ow2.asm:asm:9.2'
+    implementation 'org.ow2.asm:asm-commons:9.2'
+}
+
+gradlePlugin {
+    plugins {
+        lancetPlugin {
+            id = 'LancetX'
+            implementationClass = 'com.knightboost.lancet.plugin.LancetPlugin'
+        }
     }
 }
 

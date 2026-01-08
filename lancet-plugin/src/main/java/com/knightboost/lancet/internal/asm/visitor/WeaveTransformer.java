@@ -6,9 +6,6 @@ import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.google.common.collect.ImmutableSet;
 import com.knightboost.lancet.internal.entity.TransformInfo;
 import com.knightboost.lancet.plugin.LancetContext;
-import com.ss.android.ugc.bytex.common.graph.Graph;
-import com.ss.android.ugc.bytex.common.visitor.ClassVisitorChain;
-import com.ss.android.ugc.bytex.transformer.TransformContext;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -41,19 +38,16 @@ public class WeaveTransformer {
     //same as headVisitor
     public ClassVisitor originalClassVisitor;
 
-    private ClassVisitorChain chain;
-    private final Graph graph;
+    private LancetClassVisitorChain chain;
 
     public final MethodChain methodChain;
 
-    public WeaveTransformer( Graph graph) {
-        this.graph = graph;
-        methodChain = new MethodChain(LancetContext.instance().getClassGraph());
+    public WeaveTransformer() {
+        methodChain = new MethodChain(null);
     }
 
-    public void initVisitorChain(ClassVisitorChain visitorChain){
-        this.chain = visitorChain;
-//        OriginalClassVisitor originalClassVisitor = new OriginalClassVisitor();
+    public void initVisitorChain(LancetClassVisitorChain visitorChain){
+        this.chain = new LancetClassVisitorChain();
         BaseWeaveClassVisitor classVisitor =new BaseWeaveClassVisitor();
         TransformInfo transformInfo = LancetContext.instance().getTransformInfo();
         connect(new HookClassVisitor(transformInfo,classVisitor));
@@ -68,12 +62,29 @@ public class WeaveTransformer {
         connect(new ReplaceNewClassVisitor(transformInfo));
 
         connect(new TryCatchClassVisitor(transformInfo));
-        this.originalClassVisitor = originalClassVisitor;
+        this.originalClassVisitor = classVisitor;
 
     }
 
-    public Graph getGraph(){
-        return graph;
+    public ClassVisitor createVisitorChain(ClassVisitor cv) {
+        this.chain = new LancetClassVisitorChain();
+        BaseWeaveClassVisitor classVisitor = new BaseWeaveClassVisitor();
+        TransformInfo transformInfo = LancetContext.instance().getTransformInfo();
+
+        // 构建访问者链
+        connect(new HookClassVisitor(transformInfo, classVisitor));
+        connect(new ChangeClassExtendVisitor(transformInfo));
+        connect(new InsertClassVisitor(transformInfo.insertInfo));
+        connect(new ProxyClassVisitor(transformInfo.proxyInfo));
+        connect(classVisitor);
+        connect(new ReplaceClassVisitor(transformInfo));
+        connect(new ReplaceNewClassVisitor(transformInfo));
+        connect(new TryCatchClassVisitor(transformInfo));
+
+        // 链接到输出
+        this.chain.connect(cv);
+
+        return this.chain.getHead();
     }
 
     public MethodChain getMethodChain(){
@@ -124,7 +135,7 @@ public class WeaveTransformer {
         mv.visitEnd();
     }
 
-    public void generateInnerClasses() {
+    public void generateInnerClasses(File outputDir) {
         for (String className : mInnerClassWriter.keySet()) {
             tailVisitor.visitInnerClass(getCanonicalName(className), this.className, className, Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC);
         }
@@ -132,23 +143,13 @@ public class WeaveTransformer {
             @Override
             public void accept(String s, ClassWriter classWriter) {
                 byte[] bytes = classWriter.toByteArray();
-                TransformContext transformContext = LancetContext.instance()
-                        .getTransformContext();
                 try {
-                    File dest = transformContext.getInvocation()
-                            .getOutputProvider()
-                            .getContentLocation("weaveInner", TransformManager.CONTENT_CLASS,
-                                    ImmutableSet.of(QualifiedContent.Scope.PROJECT),
-                                    Format.DIRECTORY);
-                    File classFile = new File(dest, className + "$" + s + ".class");
+                    File classFile = new File(outputDir, className + "$" + s + ".class");
                     classFile.getParentFile().mkdirs();
-
-                    new FileOutputStream(new File(dest, className +"$"+s+".class")).write(bytes);
-
+                    new FileOutputStream(classFile).write(bytes);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         });
     }

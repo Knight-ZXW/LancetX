@@ -1,0 +1,2 @@
+// 这个文件用于应用 LancetX 插件
+// 由于插件 ID 的问题，我们直接在 settings.gradle 中注册插件

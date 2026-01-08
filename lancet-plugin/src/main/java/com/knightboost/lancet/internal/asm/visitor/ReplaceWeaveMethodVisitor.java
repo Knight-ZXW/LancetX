@@ -83,15 +83,13 @@ public class ReplaceWeaveMethodVisitor extends AdviceAdapter {
             }
 
             if (opcode == Opcodes.INVOKEVIRTUAL) { //成员函数替换
-                LancetContext.instance().getLogger()
-                        .i("replace in class: " + this.className
-                                + " method body " + methodName + methodDesc
-                                + " \n"
-                                + "    " + "replace " + owner + "." + name + desc
-                                + "    " + " to =>" + replaceInfo.replaceClassName + "." +
-                                replaceInfo.replaceMethodName + replaceInfo.replaceMethodDesc
-
-                        );
+                String logMessage = "replace in class: " + this.className
+                        + " method body " + methodName + methodDesc
+                        + " \n"
+                        + "    " + "replace " + owner + "." + name + desc
+                        + "    " + " to =>" + replaceInfo.replaceClassName + "." +
+                        replaceInfo.replaceMethodName + replaceInfo.replaceMethodDesc;
+                System.out.println(logMessage);
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC,
                         replaceInfo.replaceClassName,
                         replaceInfo.replaceMethodName,

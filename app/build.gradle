@@ -2,40 +2,36 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-
-apply plugin: 'bytex'
-ByteX {
-    enable true
-    enableInDebug true
-}
-
-
+// 确保 lancet-plugin 先被构建
 apply plugin: 'LancetX'
-LancetX{
-    enable true
-    enableInDebug true
 
-    weaveGroup{
-        insertTest {
-            enable true
-        }
-        proxyTest {
-            enable false
-        }
-        replaceInvokeTest {
-            enable true
-        }
-
+// 应用 LancetX 插件
+buildscript {
+    repositories {
+        maven { setUrl("https://maven.aliyun.com/repository/public") }
+        maven { setUrl("https://maven.aliyun.com/repository/google") }
+        mavenCentral()
+        google()
+    }
+    dependencies {
+        classpath project(':lancet-plugin')
     }
 }
 
+
+// 配置 LancetX 扩展
+LancetX {
+    enable true
+    enableInDebug true
+}
+
 android {
-    compileSdk 32
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.knightboost.lancetx"
-        minSdk 21
-        targetSdk 32
+        minSdkVersion 21
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -58,7 +54,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'org.aspectj:aspectjrt:1.8.9'
     implementation 'androidx.appcompat:appcompat:1.4.1'

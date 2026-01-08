@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew:*)",
+      "Bash(cat:*)",
+      "WebSearch",
+      "Bash(gradlew.bat build:*)",
+      "mcp__ide__getDiagnostics"
+    ]
+  }
+}

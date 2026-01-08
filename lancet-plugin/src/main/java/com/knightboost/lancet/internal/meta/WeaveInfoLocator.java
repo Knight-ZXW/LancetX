@@ -8,11 +8,10 @@ import com.knightboost.lancet.internal.entity.TransformInfo;
 import com.knightboost.lancet.internal.entity.TryCatchInfo;
 import com.knightboost.lancet.internal.exception.IllegalAnnotationException;
 import com.knightboost.lancet.internal.graph.GraphUtil;
+import com.knightboost.lancet.internal.graph.SimpleClassGraph;
 import com.knightboost.lancet.internal.log.WeaverLog;
 import com.knightboost.lancet.internal.parser.AopMethodAdjuster;
 import com.knightboost.lancet.internal.util.TypeUtils;
-import com.ss.android.ugc.bytex.common.graph.Graph;
-import com.ss.android.ugc.bytex.common.graph.MethodEntity;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -68,13 +67,13 @@ public class WeaveInfoLocator {
     //weaver类名称
     private String sourceClass;
 
-    private final Graph graph;
+    private final SimpleClassGraph graph;
 
-    public WeaveInfoLocator(Graph graph) {
+    public WeaveInfoLocator(SimpleClassGraph graph) {
         this.graph = graph;
     }
 
-    public Graph graph() {
+    public SimpleClassGraph graph() {
         return graph;
     }
 
@@ -159,14 +158,8 @@ public class WeaveInfoLocator {
             case INSERT:
                 for (String targetClass : targetClasses) {
                     if (mayCreateSuper){
-                        MethodEntity finalOriginalMethod = GraphUtil.findFinalOriginalMethod(graph,
-                                targetClass, targetMethodName, targetMethodDesc);
-                        //跳过函数是final的
-                        if (finalOriginalMethod!=null && !finalOriginalMethod.className().equals(targetClass)){
-                            WeaverLog.e(" >> << ignore Replace for final "
-                            +targetClass+" "+targetMethodName);
-                            continue;
-                        }
+                        // 简化实现：暂时跳过 final 检查
+                        // TODO: 实现完整的 final 方法检查
                     }
                     InsertInfo insertInfo = new InsertInfo(mayCreateSuper,
                             targetClass, targetMethodName, targetMethodDesc,

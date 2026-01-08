@@ -1,12 +1,12 @@
 package com.knightboost.lancet.internal.parser;
 
 import com.knightboost.lancet.internal.core.WeaverMethodParser;
+import com.knightboost.lancet.internal.graph.SimpleClassGraph;
 import com.knightboost.lancet.internal.log.WeaverLog;
 import com.knightboost.lancet.api.annotations.ClassOf;
 import com.knightboost.lancet.api.annotations.Group;
 import com.knightboost.lancet.internal.util.AsmUtil;
 import com.knightboost.lancet.plugin.LancetContext;
-import com.ss.android.ugc.bytex.common.graph.Graph;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
  */
 public class WeaverClassesParser {
 
-    private final List<ClassNode> weaverClasses =new ArrayList<>();
+    public final List<ClassNode> weaverClasses =new ArrayList<>();
     private static final String ANNOTATION_PACKAGE = "L" + ClassOf.class.getPackage()
             .getName().replace(".", "/");
 
     private static final String GROUP = Type.getDescriptor(Group.class);
 
-    public Graph graph;
+    public SimpleClassGraph graph;
 
 
     public WeaverClassesParser(){

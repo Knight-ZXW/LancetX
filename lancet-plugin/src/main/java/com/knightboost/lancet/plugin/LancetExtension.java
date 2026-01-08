@@ -2,14 +2,13 @@
 package com.knightboost.lancet.plugin;
 
 import com.knightboost.lancet.internal.log.WeaverLog;
-import com.ss.android.ugc.bytex.common.BaseExtension;
 
 import org.gradle.api.Action;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 
 
-public class LancetExtension extends BaseExtension {
+public class LancetExtension {
 
     protected static LancetExtension sLancetExtension;
 
@@ -19,11 +18,10 @@ public class LancetExtension extends BaseExtension {
 
 
     private NamedDomainObjectContainer<WeaveGroup> weaveGroup;
+    private boolean enable = false;
+    private boolean enableInDebug = false;
 
     public LancetExtension(Project project) {
-        //默认不可用
-        enable(false);
-        enableInDebug(false);
         bindProject(project);
     }
 
@@ -57,7 +55,22 @@ public class LancetExtension extends BaseExtension {
         return weaveGroup.isEnable();
     }
 
-    @Override
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void enable(boolean enable) {
+        this.enable = enable;
+    }
+
+    public boolean isEnableInDebug() {
+        return enableInDebug;
+    }
+
+    public void enableInDebug(boolean enableInDebug) {
+        this.enableInDebug = enableInDebug;
+    }
+
     public String getName() {
         return "LancetX";
     }
